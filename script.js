@@ -42,7 +42,7 @@ const unitDisplayNames = {
 	"4lb": "4-lb Foot Artillery",
 	"6lb": "6-lb Foot Artillery",
 	howitzer: "6-in Howitzers",
-	horse_artillery: "4-lb Horse Artillery",
+	horse_artillery: "6-lb Horse Artillery",
 };
 
 // State
