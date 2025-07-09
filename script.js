@@ -4,7 +4,7 @@ const cost = {
 	line_infantry: [200, 50],
 	light_infantry: [200, 75],
 	guard: [300, 75],
-	grenadier: [275, 50],
+	grenadier: [250, 50],
 	militia: [100, 50],
 	hussar: [75, 75],
 	lancer: [100, 100],
