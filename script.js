@@ -1,63 +1,65 @@
 // Army composition data
 const cost = {
-  // name: [manpower, gold],
-  line_infantry: [200, 50],
-  light_infantry: [200, 75],
-  guard: [300, 75],
-  grenadier: [275, 50],
-  militia: [150, 25],
-  hussar: [75, 75],
-  lancer: [100, 100],
-  dragoon: [125, 75],
-  cuirassier: [175, 100],
-  "12lb": [50, 350],
-  "8lb": [25, 275],
-  "4lb": [25, 175],
-  howitzer: [50, 200],
-  horse_artillery: [75, 225],
-}
+	// name: [manpower, gold],
+	line_infantry: [200, 50],
+	light_infantry: [200, 75],
+	guard: [300, 75],
+	grenadier: [275, 50],
+	militia: [100, 50],
+	hussar: [75, 75],
+	lancer: [100, 100],
+	dragoon: [100, 75],
+	cuirassier: [125, 100],
+	"12lb": [50, 250],
+	"8lb": [25, 200],
+	"4lb": [25, 150],
+	howitzer: [50, 225],
+	horse_artillery: [75, 175],
+	"6lb": [25, 175],
+};
 
 const budget = {
-  // name: [manpower, gold]
-  skirmish: [1400, 550],
-  clash: [2700, 1250],
-  combat: [4750, 2000],
-  battle: [7450, 3850],
-  grandbattle: [14000, 6750],
-}
+	// name: [manpower, gold]
+	skirmish: [1100, 500],
+	clash: [2500, 1250],
+	combat: [5000, 2500],
+	battle: [8000, 4250],
+	grandbattle: [15000, 8000],
+};
 
 const unitDisplayNames = {
-    line_infantry: "Line Infantry",
-    light_infantry: "Light Infantry",
-    guard: "Guards",
-    grenadier: "Grenadiers",
-    militia: "Militia",
-    hussar: "Hussars",
-    lancer: "Lancers",
-    dragoon: "Dragoons",
-    cuirassier: "Cuirassiers",
-    "12lb": "12-lb Foot Artillery",
-    "8lb": "8-lb Foot Artillery",
-    "4lb": "4-lb Foot Artillery",
-    howitzer: "6-in Howitzers",
-    horse_artillery: "4-lb Horse Artillery",
+	line_infantry: "Line Infantry",
+	light_infantry: "Light Infantry",
+	guard: "Guards",
+	grenadier: "Grenadiers",
+	militia: "Militia",
+	hussar: "Hussars",
+	lancer: "Lancers",
+	dragoon: "Dragoons",
+	cuirassier: "Cuirassiers",
+	"12lb": "12-lb Foot Artillery",
+	"8lb": "8-lb Foot Artillery",
+	"4lb": "4-lb Foot Artillery",
+	"6lb": "6-lb Foot Artillery",
+	howitzer: "6-in Howitzers",
+	horse_artillery: "4-lb Horse Artillery",
 };
 
 // State
 let currentMode = "grandbattle";
 let composition = {
-    line_infantry: 50,
-    light_infantry: 10,
-    guard: 0,
-    militia: -1,
-    hussar: 0,
-    lancer: 6,
-    dragoon: 4,
-    cuirassier: 7,
-    "12lb": 0,
-    "8lb": 6,
-    howitzer: -1,
-    horse_artillery: -1,
+	line_infantry: 50,
+	light_infantry: 10,
+	guard: 0,
+	militia: -1,
+	hussar: 0,
+	lancer: 6,
+	dragoon: 4,
+	cuirassier: 7,
+	"12lb": 0,
+	"8lb": 6,
+	howitzer: -1,
+	horse_artillery: -1,
 };
 
 // DOM elements
@@ -77,69 +79,69 @@ const modeIcon = document.querySelector(".mode-icon");
 
 // Initialize
 function init() {
-    updateResourceDisplay();
-    populateUnitsTable();
+	updateResourceDisplay();
+	populateUnitsTable();
 
-    // Check for saved theme preference or preferred color scheme
-    const savedTheme =
-        localStorage.getItem("theme") ||
-        (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light");
+	// Check for saved theme preference or preferred color scheme
+	const savedTheme =
+		localStorage.getItem("theme") ||
+		(window.matchMedia("(prefers-color-scheme: dark)").matches
+			? "dark"
+			: "light");
 
-    if (savedTheme === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-        themeToggle.checked = true;
-        modeIcon.textContent = "🌙";
-    } else {
-        modeIcon.textContent = "☀️";
-    }
+	if (savedTheme === "dark") {
+		document.documentElement.setAttribute("data-theme", "dark");
+		themeToggle.checked = true;
+		modeIcon.textContent = "🌙";
+	} else {
+		modeIcon.textContent = "☀️";
+	}
 
-    // Event listeners
-    modeButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            modeButtons.forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentMode = btn.dataset.mode;
-            updateResourceDisplay();
-            updateResourcesLeft();
-        });
-    });
+	// Event listeners
+	modeButtons.forEach((btn) => {
+		btn.addEventListener("click", () => {
+			modeButtons.forEach((b) => b.classList.remove("active"));
+			btn.classList.add("active");
+			currentMode = btn.dataset.mode;
+			updateResourceDisplay();
+			updateResourcesLeft();
+		});
+	});
 
-    resetBtn.addEventListener("click", resetComposition);
-    optimizeBtn.addEventListener("click", optimizeComposition);
+	resetBtn.addEventListener("click", resetComposition);
+	optimizeBtn.addEventListener("click", optimizeComposition);
 
-    // Theme toggle event listener
-    themeToggle.addEventListener("change", switchTheme, false);
+	// Theme toggle event listener
+	themeToggle.addEventListener("change", switchTheme, false);
 }
 
 function switchTheme(e) {
-    if (e.target.checked) {
-        document.documentElement.setAttribute("data-theme", "dark");
-        localStorage.setItem("theme", "dark");
-        modeIcon.textContent = "🌙";
-    } else {
-        document.documentElement.setAttribute("data-theme", "light");
-        localStorage.setItem("theme", "light");
-        modeIcon.textContent = "☀️";
-    }
+	if (e.target.checked) {
+		document.documentElement.setAttribute("data-theme", "dark");
+		localStorage.setItem("theme", "dark");
+		modeIcon.textContent = "🌙";
+	} else {
+		document.documentElement.setAttribute("data-theme", "light");
+		localStorage.setItem("theme", "light");
+		modeIcon.textContent = "☀️";
+	}
 }
 
 function updateResourceDisplay() {
-    const [manpower, gold] = budget[currentMode];
-    manpowerElement.textContent = manpower;
-    goldElement.textContent = gold;
-    updateResourcesLeft();
+	const [manpower, gold] = budget[currentMode];
+	manpowerElement.textContent = manpower;
+	goldElement.textContent = gold;
+	updateResourcesLeft();
 }
 
 function populateUnitsTable() {
-    unitsTbody.innerHTML = "";
+	unitsTbody.innerHTML = "";
 
-    for (const unit in cost) {
-        const [manpower, gold] = cost[unit];
-        const row = document.createElement("tr");
+	for (const unit in cost) {
+		const [manpower, gold] = cost[unit];
+		const row = document.createElement("tr");
 
-        row.innerHTML = `
+		row.innerHTML = `
                     <td>${unitDisplayNames[unit]}</td>
                     <td>${manpower}</td>
                     <td>${gold}</td>
@@ -147,252 +149,250 @@ function populateUnitsTable() {
                         <div class="unit-controls">
                             <button class="unit-btn" data-unit="${unit}" data-action="decrease">-</button>
                             <span class="unit-count" id="${unit}-count">${
-            composition[unit] >= 0 ? composition[unit] : 0
-        }</span>
+			composition[unit] >= 0 ? composition[unit] : 0
+		}</span>
                             <button class="unit-btn" data-unit="${unit}" data-action="increase">+</button>
                         </div>
                     </td>
                     <td>
                         <input type="checkbox" class="unit-toggle" data-unit="${unit}" ${
-            composition[unit] >= 0 ? "checked" : ""
-        }>
+			composition[unit] >= 0 ? "checked" : ""
+		}>
                     </td>
                 `;
 
-        unitsTbody.appendChild(row);
-    }
+		unitsTbody.appendChild(row);
+	}
 
-    // Add event listeners to buttons and checkboxes
-    document.querySelectorAll(".unit-btn").forEach((btn) => {
-        btn.addEventListener("click", handleUnitCountChange);
-    });
+	// Add event listeners to buttons and checkboxes
+	document.querySelectorAll(".unit-btn").forEach((btn) => {
+		btn.addEventListener("click", handleUnitCountChange);
+	});
 
-    document.querySelectorAll(".unit-toggle").forEach((checkbox) => {
-        checkbox.addEventListener("change", handleUnitToggle);
-    });
+	document.querySelectorAll(".unit-toggle").forEach((checkbox) => {
+		checkbox.addEventListener("change", handleUnitToggle);
+	});
 }
 
 function handleUnitCountChange(e) {
-    const unit = e.target.dataset.unit;
-    const action = e.target.dataset.action;
+	const unit = e.target.dataset.unit;
+	const action = e.target.dataset.action;
 
-    if (composition[unit] < 0) {
-        composition[unit] = 0;
-    }
+	if (composition[unit] < 0) {
+		composition[unit] = 0;
+	}
 
-    if (action === "increase") {
-        composition[unit]++;
-    } else if (action === "decrease" && composition[unit] > 0) {
-        composition[unit]--;
-    }
+	if (action === "increase") {
+		composition[unit]++;
+	} else if (action === "decrease" && composition[unit] > 0) {
+		composition[unit]--;
+	}
 
-    document.getElementById(`${unit}-count`).textContent = composition[unit];
-    updateResourcesLeft();
+	document.getElementById(`${unit}-count`).textContent = composition[unit];
+	updateResourcesLeft();
 }
 
 function handleUnitToggle(e) {
-    const unit = e.target.dataset.unit;
-    const isChecked = e.target.checked;
+	const unit = e.target.dataset.unit;
+	const isChecked = e.target.checked;
 
-    if (isChecked) {
-        if (composition[unit] < 0) {
-            composition[unit] = 0;
-        }
-    } else {
-        composition[unit] = -1;
-        document.getElementById(`${unit}-count`).textContent = 0;
-    }
+	if (isChecked) {
+		if (composition[unit] < 0) {
+			composition[unit] = 0;
+		}
+	} else {
+		composition[unit] = -1;
+		document.getElementById(`${unit}-count`).textContent = 0;
+	}
 
-    updateResourcesLeft();
+	updateResourcesLeft();
 }
 
 function totalCost(comp) {
-    let manpower = 0;
-    let gold = 0;
+	let manpower = 0;
+	let gold = 0;
 
-    for (let unit in comp) {
-        if (comp[unit] > 0) {
-            manpower += cost[unit][0] * comp[unit];
-            gold += cost[unit][1] * comp[unit];
-        }
-    }
+	for (let unit in comp) {
+		if (comp[unit] > 0) {
+			manpower += cost[unit][0] * comp[unit];
+			gold += cost[unit][1] * comp[unit];
+		}
+	}
 
-    return [manpower, gold];
+	return [manpower, gold];
 }
 
 function budgetLeft(costArray) {
-    let [manpower, gold] = budget[currentMode];
-    return [manpower - costArray[0], gold - costArray[1]];
+	let [manpower, gold] = budget[currentMode];
+	return [manpower - costArray[0], gold - costArray[1]];
 }
 
 function updateResourcesLeft() {
-    const costs = totalCost(composition);
-    const [manpowerLeft, goldLeft] = budgetLeft(costs);
+	const costs = totalCost(composition);
+	const [manpowerLeft, goldLeft] = budgetLeft(costs);
 
-    manpowerLeftElement.textContent = manpowerLeft;
-    goldLeftElement.textContent = goldLeft;
+	manpowerLeftElement.textContent = manpowerLeft;
+	goldLeftElement.textContent = goldLeft;
 
-    // Change color based on remaining resources
-    manpowerLeftElement.style.color =
-        manpowerLeft < 0 ? "var(--british-red)" : "inherit";
-    goldLeftElement.style.color =
-        goldLeft < 0 ? "var(--british-red)" : "inherit";
+	// Change color based on remaining resources
+	manpowerLeftElement.style.color =
+		manpowerLeft < 0 ? "var(--british-red)" : "inherit";
+	goldLeftElement.style.color = goldLeft < 0 ? "var(--british-red)" : "inherit";
 }
 
 function resetComposition() {
-    composition = {
-        line_infantry: 0,
-        light_infantry: 0,
-        guard: 0,
-        grenadier: 0,
-        militia: 0,
-        hussar: 0,
-        lancer: 0,
-        dragoon: 0,
-        cuirassier: 0,
-        "12lb": 0,
-        "8lb": 0,
-        "4lb": 0,
-        howitzer: 0,
-        horse_artillery: 0,
-    };
+	composition = {
+		line_infantry: 0,
+		light_infantry: 0,
+		guard: 0,
+		grenadier: 0,
+		militia: 0,
+		hussar: 0,
+		lancer: 0,
+		dragoon: 0,
+		cuirassier: 0,
+		"12lb": 0,
+		"8lb": 0,
+		"4lb": 0,
+		howitzer: 0,
+		horse_artillery: 0,
+	};
 
-    populateUnitsTable();
-    updateResourcesLeft();
-    resultSection.classList.remove("show");
+	populateUnitsTable();
+	updateResourcesLeft();
+	resultSection.classList.remove("show");
 }
 
 function hash(obj) {
-    const str = JSON.stringify(obj);
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = (hash * 31 + char) | 0;
-    }
-    return hash.toString(16);
+	const str = JSON.stringify(obj);
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		const char = str.charCodeAt(i);
+		hash = (hash * 31 + char) | 0;
+	}
+	return hash.toString(16);
 }
 
 function optimizeComposition() {
-    // Show loading state
-    resultSection.classList.add("show");
-    loader.style.display = "block";
-    optimizationResult.innerHTML = "";
+	// Show loading state
+	resultSection.classList.add("show");
+	loader.style.display = "block";
+	optimizationResult.innerHTML = "";
 
-    // Clean up composition to only include enabled units
-    let startingComp = {};
-    for (let unit in composition) {
-        if (composition[unit] >= 0) {
-            startingComp[unit] = composition[unit];
-        }
-    }
+	// Clean up composition to only include enabled units
+	let startingComp = {};
+	for (let unit in composition) {
+		if (composition[unit] >= 0) {
+			startingComp[unit] = composition[unit];
+		}
+	}
 
-    // Start optimization process
-    let previousPly = [startingComp];
-    console.log(startingComp)
-    let ply = [];
-    let hashes = new Set(hash(startingComp));
-    let max = [100000, 100000];
-    let curmax = [0, 0]
-    let plyCount = 0;
-    let hasFoundBestSolution = false;
-    let solutions = [];
+	// Start optimization process
+	let previousPly = [startingComp];
+	console.log(startingComp);
+	let ply = [];
+	let hashes = new Set(hash(startingComp));
+	let max = [100000, 100000];
+	let curmax = [0, 0];
+	let plyCount = 0;
+	let hasFoundBestSolution = false;
+	let solutions = [];
 
-    // Set timeout to prevent blocking UI
-    setTimeout(function runOptimization() {
-        for (let i = 0; i < previousPly.length; i++) {
-            for (let unit in previousPly[i]) {
-                for (let j = 0; j < 2; j++) {
-                    let current = structuredClone(previousPly[i]);
-                    current[unit] += (j * 2) - 1; // -1 if j=0, +1 if j=1
-                    if (current[unit] < 0) continue;
+	// Set timeout to prevent blocking UI
+	setTimeout(function runOptimization() {
+		for (let i = 0; i < previousPly.length; i++) {
+			for (let unit in previousPly[i]) {
+				for (let j = 0; j < 2; j++) {
+					let current = structuredClone(previousPly[i]);
+					current[unit] += j * 2 - 1; // -1 if j=0, +1 if j=1
+					if (current[unit] < 0) continue;
 
-                    let budget = budgetLeft(totalCost(current));
-                    if (budget[0] >= 0 && 
-                        budget[1] >= 0 && 
-                        budget[0] < max[0] && 
-                        budget[1] < max[1]) {
-                        // clamp down on comps with too much leftovers
-                        curmax[0] = Math.max(budget[0], 650);
-                        curmax[1] = Math.max(budget[1], 650);
-                        
-                        const currentHash = hash(current);
+					let budget = budgetLeft(totalCost(current));
+					if (
+						budget[0] >= 0 &&
+						budget[1] >= 0 &&
+						budget[0] < max[0] &&
+						budget[1] < max[1]
+					) {
+						// clamp down on comps with too much leftovers
+						curmax[0] = Math.max(budget[0], 650);
+						curmax[1] = Math.max(budget[1], 650);
 
-                        if (!hashes.has(currentHash)) {
-                          if (
-                              budget[0] == 0 &&
-                              budget[1] == 0
-                          ) {
-                              solutions.push(current);
-                              hasFoundBestSolution = true;
-                          }
+						const currentHash = hash(current);
 
-                          ply.push(current);
-                          hashes.add(currentHash);
-                        }
-                    }
-                }
-            }
-        }
+						if (!hashes.has(currentHash)) {
+							if (budget[0] == 0 && budget[1] == 0) {
+								solutions.push(current);
+								hasFoundBestSolution = true;
+							}
 
-        max = curmax;
-        if (ply.length < 100) {
-          max = [100000, 100000];
-        }
-        previousPly = ply;
-        ply = [];
-        plyCount++;
+							ply.push(current);
+							hashes.add(currentHash);
+						}
+					}
+				}
+			}
+		}
 
-        // Display optimization progress
-        optimizationResult.innerHTML = `<p>The Imperial Staff is deliberating... Strategy iteration ${plyCount} (${previousPly.length} combinations)</p>`;
+		max = curmax;
+		if (ply.length < 100) {
+			max = [100000, 100000];
+		}
+		previousPly = ply;
+		ply = [];
+		plyCount++;
 
-        // If nothing found after 20 plies or solution found, stop
-        if (plyCount > 20 || hasFoundBestSolution) {
-            if (!hasFoundBestSolution) {
-                // Find best partial solution
-                let bestComps = [];
-                let minLeftover = Infinity;
+		// Display optimization progress
+		optimizationResult.innerHTML = `<p>The Imperial Staff is deliberating... Strategy iteration ${plyCount} (${previousPly.length} combinations)</p>`;
 
-                for (let comp of previousPly) {
-                    const [manLeft, goldLeft] = budgetLeft(totalCost(comp));
-                    if (manLeft >= 0 && goldLeft >= 0) {
-                        const leftover = manLeft + goldLeft;
-                        if (leftover < minLeftover) {
-                            minLeftover = leftover;
-                            bestComps = [comp];
-                        } else if (leftover == minLeftover) {
-                            bestComps.push(comp);
-                        }
-                    }
-                }
+		// If nothing found after 20 plies or solution found, stop
+		if (plyCount > 20 || hasFoundBestSolution) {
+			if (!hasFoundBestSolution) {
+				// Find best partial solution
+				let bestComps = [];
+				let minLeftover = Infinity;
 
-                solutions = bestComps || startingComp;
-            }
+				for (let comp of previousPly) {
+					const [manLeft, goldLeft] = budgetLeft(totalCost(comp));
+					if (manLeft >= 0 && goldLeft >= 0) {
+						const leftover = manLeft + goldLeft;
+						if (leftover < minLeftover) {
+							minLeftover = leftover;
+							bestComps = [comp];
+						} else if (leftover == minLeftover) {
+							bestComps.push(comp);
+						}
+					}
+				}
 
-            displayResults(solutions, 0);
-        } else {
-            setTimeout(runOptimization, 0); // Continue optimization
-        }
-    }, 0);
+				solutions = bestComps || startingComp;
+			}
+
+			displayResults(solutions, 0);
+		} else {
+			setTimeout(runOptimization, 0); // Continue optimization
+		}
+	}, 0);
 }
 
 function displayResults(solutions, solutionIndex) {
-  console.log(solutions)
-    const solution = solutions[solutionIndex];
-    optimizationResult.innerHTML = ``;
-    loader.style.display = "none";
-    if (!solution) {
-        optimizationResult.innerHTML = `
+	console.log(solutions);
+	const solution = solutions[solutionIndex];
+	optimizationResult.innerHTML = ``;
+	loader.style.display = "none";
+	if (!solution) {
+		optimizationResult.innerHTML = `
                     <div class="alert">
                         <p>The Imperial Staff could not devise an optimal battle plan. Consider adjusting your unit selections, Field Marshal.</p>
                     </div>
                 `;
-        return;
-    }
+		return;
+	}
 
-    const costs = totalCost(solution);
-    const [manpowerLeft, goldLeft] = budgetLeft(costs);
+	const costs = totalCost(solution);
+	const [manpowerLeft, goldLeft] = budgetLeft(costs);
 
-    let resultHTML = `
+	let resultHTML = `
                 <div class="decoration">
                     <hr><span>⚜</span><hr>
                 </div>
@@ -411,8 +411,8 @@ function displayResults(solutions, solutionIndex) {
                 </div>
                 
                 <h3>Optimal Deployment ${solutionIndex + 1} / ${
-        solutions.length
-    }<span class="emblem">⚔</span></h3>
+		solutions.length
+	}<span class="emblem">⚔</span></h3>
                 
                 <div class="optimization-result">
                     <table class="units-table">
@@ -427,9 +427,9 @@ function displayResults(solutions, solutionIndex) {
                         <tbody>
             `;
 
-    for (const unit in solution) {
-        if (solution[unit] > 0) {
-            resultHTML += `
+	for (const unit in solution) {
+		if (solution[unit] > 0) {
+			resultHTML += `
                         <tr>
                             <td>${unitDisplayNames[unit]}</td>
                             <td><strong>${solution[unit]}</strong></td>
@@ -437,10 +437,10 @@ function displayResults(solutions, solutionIndex) {
                             <td>${cost[unit][1] * solution[unit]}</td>
                         </tr>
                     `;
-        }
-    }
+		}
+	}
 
-    resultHTML += `
+	resultHTML += `
                         </tbody>
                     </table>
                 </div>
@@ -457,32 +457,32 @@ function displayResults(solutions, solutionIndex) {
                 </div>
             `;
 
-    optimizationResult.innerHTML = resultHTML;
+	optimizationResult.innerHTML = resultHTML;
 
-    // Add event listener to the apply button
-    document.getElementById("apply-btn").addEventListener("click", () => {
-        composition = { ...composition, ...solution };
-        populateUnitsTable();
-        updateResourcesLeft();
-    });
+	// Add event listener to the apply button
+	document.getElementById("apply-btn").addEventListener("click", () => {
+		composition = { ...composition, ...solution };
+		populateUnitsTable();
+		updateResourcesLeft();
+	});
 
-    document
-        .getElementById("previous-solution-button")
-        .addEventListener("click", () => {
-            if (solutionIndex < 1) {
-                return;
-            }
-            displayResults(solutions, solutionIndex - 1);
-        });
+	document
+		.getElementById("previous-solution-button")
+		.addEventListener("click", () => {
+			if (solutionIndex < 1) {
+				return;
+			}
+			displayResults(solutions, solutionIndex - 1);
+		});
 
-    document
-        .getElementById("next-solution-button")
-        .addEventListener("click", () => {
-            if (solutionIndex + 1 > solutions.length - 1) {
-                return;
-            }
-            displayResults(solutions, solutionIndex + 1);
-        });
+	document
+		.getElementById("next-solution-button")
+		.addEventListener("click", () => {
+			if (solutionIndex + 1 > solutions.length - 1) {
+				return;
+			}
+			displayResults(solutions, solutionIndex + 1);
+		});
 }
 
 // Initialize the application
@@ -490,40 +490,38 @@ document.addEventListener("DOMContentLoaded", init);
 
 var slideTimeMilis = 600;
 
-document.addEventListener('DOMContentLoaded', function() {
-    const modalWindow = document.getElementById('guide-modal');
-    const modal = document.getElementsByClassName('modal-content')[0];
-    const guideBtn = document.getElementById('guide-btn');
-    const closeBtn = document.querySelector('.close');
-    
-    // Open the modal when the guide button is clicked
-    guideBtn.addEventListener('click', function() {
-        modalWindow.style.display = 'block';
-        modal.classList.toggle('showing');
-        modal.classList.toggle('hiding');
-    });
-    
-    // Close the modal when the close button is clicked
-    closeBtn.addEventListener('click', function() {
-        
-        setTimeout(function() {
-            modalWindow.style.display = 'none';
-        }, slideTimeMilis); // Wait for the hiding animation to finish
+document.addEventListener("DOMContentLoaded", function () {
+	const modalWindow = document.getElementById("guide-modal");
+	const modal = document.getElementsByClassName("modal-content")[0];
+	const guideBtn = document.getElementById("guide-btn");
+	const closeBtn = document.querySelector(".close");
 
-        modal.classList.toggle('showing');
-        modal.classList.toggle('hiding');
-    });
-    
-    // Close the modal when clicking outside of it
-    window.addEventListener('click', function(event) {
-        if (event.target === modalWindow) {
-            
-            setTimeout(function() {
-                modalWindow.style.display = 'none';
-            }, slideTimeMilis); // Wait for the hiding animation to finish
+	// Open the modal when the guide button is clicked
+	guideBtn.addEventListener("click", function () {
+		modalWindow.style.display = "block";
+		modal.classList.toggle("showing");
+		modal.classList.toggle("hiding");
+	});
 
-            modal.classList.toggle('showing');
-            modal.classList.toggle('hiding');
-        }
-    });
+	// Close the modal when the close button is clicked
+	closeBtn.addEventListener("click", function () {
+		setTimeout(function () {
+			modalWindow.style.display = "none";
+		}, slideTimeMilis); // Wait for the hiding animation to finish
+
+		modal.classList.toggle("showing");
+		modal.classList.toggle("hiding");
+	});
+
+	// Close the modal when clicking outside of it
+	window.addEventListener("click", function (event) {
+		if (event.target === modalWindow) {
+			setTimeout(function () {
+				modalWindow.style.display = "none";
+			}, slideTimeMilis); // Wait for the hiding animation to finish
+
+			modal.classList.toggle("showing");
+			modal.classList.toggle("hiding");
+		}
+	});
 });
